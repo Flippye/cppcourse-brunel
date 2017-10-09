@@ -9,7 +9,7 @@ int main () {
 	double a, b;
 	try
 	{
-		std::cout << "Choose an interval [s] :";
+		std::cout << "Choose an interval [ms] :";
 		std::cin >> a >> b;
 		
 		//we check if the interval is correct with a try-catch block
@@ -21,19 +21,16 @@ int main () {
 	}
 	
 	//we set h, the interval incrementer
-	double h = 0.002;
-	/* EXPLANATION : because i don't use the refractory time yet, i have set my interval incrementer h to 2ms (=usual refractory time),
-	 * so if we have a spike and the membrane potential is reset, the time that the neuron takes to make another iteration of the while 
-	 * loop equals the usual refractory time */
+	double h = 0.1;
 	
 	//we set the constants
-	const double tau(0.02);
+	const double tau(20.0);
 	const double capacity(1.00);
 	const double R(tau/capacity); //because tau = R*capacity
 	double EXP(exp(-h/tau));
 	double CONST((R/tau) * (1-EXP));
 	
-	neuron neuron1(0); //we instantiate a neuron test
+	neuron neuron1(20); //we instantiate a neuron test
 	std::ofstream membranePotentials1("membranePotentials.txt"); //we create a file to store its membrane potentials values
 	
 	//we test its values
@@ -51,9 +48,10 @@ int main () {
 	while(a<=b) 
 	{
 		std::cout << "Iteration number " << n << std::endl;
-		std::cout << "Time is " << a << std::endl;
+		//std::cout << "Time is " << a << std::endl;
 		
 		neuron1.update(a, EXP, CONST, Iext);
+		neuron1.setRefractoryTime(neuron1.getRefractoryTime() - h);
 		
 		//we store the membrane potential of this interval in a file
 		membranePotentials1 << neuron1.getPot() << "\n";
@@ -66,4 +64,4 @@ int main () {
 	membranePotentials1.close();
 	
 	return 0;
-}
+} 
