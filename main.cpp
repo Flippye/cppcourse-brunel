@@ -27,7 +27,7 @@ int main () {
 	//we test its values
 	//std::cout << "Potential of neuron1 is : " << neuron1.getPot() << " and actual nb of spikes is : " << neuron1.getSpikesNb() << std::endl;
 			
-	unsigned int nit_ = ((b-a)/neuron1.getH()); //number of iterations (or steps) of the simulation
+	unsigned int nit_ = (unsigned int) ((b-a)/neuron1.getH()); //number of iterations (or steps) of the simulation (double cast into int)
 
 	for(unsigned int i = 0; i < nit_; i++)
 	{

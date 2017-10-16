@@ -1,0 +1,40 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/INTRANET/cllmulle/myfiles/SV-III/neuron/cortex.cpp
+iostream
+-
+cortex.hpp
+/home/INTRANET/cllmulle/myfiles/SV-III/neuron/cortex.hpp
+
+/home/INTRANET/cllmulle/myfiles/SV-III/neuron/cortex.hpp
+neuron.hpp
+/home/INTRANET/cllmulle/myfiles/SV-III/neuron/neuron.hpp
+vector
+-
+
+/home/INTRANET/cllmulle/myfiles/SV-III/neuron/main.cpp
+iostream
+-
+fstream
+-
+neuron.hpp
+/home/INTRANET/cllmulle/myfiles/SV-III/neuron/neuron.hpp
+
+/home/INTRANET/cllmulle/myfiles/SV-III/neuron/neuron.cpp
+iostream
+-
+neuron.hpp
+/home/INTRANET/cllmulle/myfiles/SV-III/neuron/neuron.hpp
+
+/home/INTRANET/cllmulle/myfiles/SV-III/neuron/neuron.hpp
+vector
+-
+cmath
+-
+

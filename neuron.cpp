@@ -1,9 +1,9 @@
 #include <iostream>
 #include "neuron.hpp"
 
-
+//constructor
 neuron::neuron(double mPot, double Iext, unsigned int spikesNb, int clock, double refractoryTime) //constructor
-	: mPot_(mPot), Iext_(Iext), spikesNb_(spikesNb), clock_(clock), refractoryTime_(refractoryTime)
+	: mPot_(mPot), Iext_(Iext), spikesNb_(spikesNb), clock_(clock), refractoryTime_(refractoryTime), ringBuffer_(10,0)
 {}
 	
 //getters
@@ -15,11 +15,6 @@ double neuron::getPot() const
 unsigned int neuron::getSpikesNb() const
 {
 	return spikesNb_;
-}
-
-std::vector<double> neuron::getSpikesTime() const
-{
-	return spikesTime_;
 }
 
 double neuron::getRefractoryTime() const
@@ -48,17 +43,24 @@ void neuron::setSpikesNb(unsigned int spikesNb)
 	spikesNb_ = spikesNb;
 }
 
-/*void neuron::getSpikesTime()
-{}*/
-
 void neuron::setRefractoryTime(double const refractoryTime)
 {
 	refractoryTime_ = refractoryTime;
 }
 
-
-void neuron::update(unsigned int i)
+/*this function adds one in the ring buffer of our neuron when another 
+ * neuron around spikes and transfers an additionnal potential J_ to our neuron*/
+void neuron::setRingBuffer(int delaySteps)
 {
+	ringBuffer_[(clock_ + delaySteps) % ringBuffer_.size()] += 1;
+}
+
+
+
+bool neuron::update(unsigned int i)
+{
+	bool isItASpike (false); //bool variable, initialized to false if there is no spike, set to true if we have one
+	
 	//we check if there is a spike, and if yes, we memorize the hour in the vector spikesTime_
 	if(mPot_ >= threshold_)
 	{
@@ -71,28 +73,24 @@ void neuron::update(unsigned int i)
 		refractorySteps_ = (2/h_); //2ms
 		
 		mPot_ = 0.0; //the neuron must get back to its original membrane potential after a spike
+		
+		isItASpike = true;
 	}
 	
-	
+	//we actualize V(t+h)
 	if(refractorySteps_ <= 0)
 	{
-		//we actualize V(t+h)
-		mPot_ = (EXP*mPot_ + Iext_*CONST);
+		/*we check if there is any spikes inside the ring buffer 
+		 * waiting to be counted in the membrane potential of the neuron*/
+		double Js = (ringBuffer_[i%ringBuffer_.size()]*J_);
+		mPot_ = (EXP*mPot_ + Iext_*CONST + Js);
+		
 		std::cout << "j'actualise " << mPot_ << " voici Iext " << Iext_ << " et EXP " << EXP << " et CONST " << CONST << std::endl;
 	}
 	
-	clock_ = i; //the neuron time is refreshed
-	refractorySteps_ --; //refractorySteps_ is decremented
+	clock_ = i; 			//the neuron time is refreshed
+	refractorySteps_ --; 	//refractorySteps_ is decremented
+	ringBuffer_[i%ringBuffer_.size()] = 0; 		//we set the ring buffer back to 0
+	
+	return isItASpike;
 } 
-
-/*bool neuron::isRefractory() const
-{
-	if(refractoryTime_ > 0.0000000000000000)
-	{
-		return true;
-	}
-	else
-	{
-		return false;
-	}
-}*/
