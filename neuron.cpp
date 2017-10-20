@@ -85,7 +85,7 @@ bool neuron::update(unsigned int i)
 		double Js = (ringBuffer_[i%ringBuffer_.size()]*J_);
 		mPot_ = (EXP*mPot_ + Iext_*CONST + Js);
 		
-		std::cout << "j'actualise " << mPot_ << " voici Iext " << Iext_ << " et EXP " << EXP << " et CONST " << CONST << std::endl;
+		std::cout << "j'actualise " << mPot_ << std::endl;
 	}
 	
 	clock_ = i; 			//the neuron time is refreshed

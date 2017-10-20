@@ -1,6 +1,11 @@
 #include <iostream>
 #include "cortex.hpp"
 
+void cortex::pushbackToNeurons_(neuron* const neuronToAdd)
+{
+	neurons_.push_back(neuronToAdd);
+}
+
 void cortex::receiveSpike(neuron receiver)
 {
 	receiver.setRingBuffer(delaySteps_);	

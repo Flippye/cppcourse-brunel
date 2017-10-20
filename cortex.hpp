@@ -13,10 +13,14 @@ class cortex : public neuron {
 	const double delay_ = 0.9;		//synaptic delay [ms]
 	
 	double h_ = 0.1; 							//integration stepsize TEMPORARY SOLUTION
-	const int delaySteps_ = (int) (delay_/h_); 	//number of time steps of the synaptic delay
+	const int delaySteps_ = (int) (delay_/h_); 	//number of time steps of the synaptic delay (int conversion)
 	
 	public:
-	void receiveSpike(neuron receiver);	//puts a spike in the ring buffer of a neuron
+	cortex(unsigned int neuronNb = 0);			//constructor
+	~cortex();
+	
+	void pushbackToNeurons_(neuron* const neuronToAdd);
+	void receiveSpike(neuron receiver);	//puts a spike in the ring buffer of a neuron receiver
 	void updateAll(unsigned int nit);	//update all neurons inside the vector neurons_
 
 };
