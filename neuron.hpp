@@ -15,6 +15,7 @@ class neuron {
 	double refractoryTime_; 	//refractory time (in ms)
 	std::vector<double> spikesTime_; 	//vector with all spikes time of the neuron
 	std::vector<int> ringBuffer_; 		//vector that allows to create a delay when transmitting spikes between neurons (initial size 10)
+	bool isExcitatory_ = true;			//if the neuron is excitatory, bool is true, if the neuron is inhibitory, bool is false
 	
 	const double threshold_ = 20.0; 	//spike threshold
 	double h_ = 0.1; 					//integration stepsize
@@ -32,7 +33,7 @@ class neuron {
 	
 	public :
 	
-	neuron(double mPot, double Iext = 10.0, unsigned int spikesNb = 0, int clock = 0, double refractoryTime = 2.0); //constructor
+	neuron(double mPot = 0, double Iext = 10.0, unsigned int spikesNb = 0, int clock = 0, double refractoryTime = 2.0); //constructor
 	
 	//getters
 	double getPot() const; 				//return the membrane potential
@@ -40,14 +41,17 @@ class neuron {
 	double getRefractoryTime() const; 	//retunrn the refractory time
 	double getH() const;				//return the stepsize of the simulation 
 	double getIext() const;				//return the external current
+	bool getExcitatoryState() const;	//return the current excitatory state of the neuron
+	std::vector<double> getSpikesTime() const;
 	
 	//setters
 	void setPot(double mPot);					//set a new membrane potential
 	void setSpikesNb(unsigned int spikesNb); 	//set the number of spikes of the neuron
-	void setRefractoryTime(double const refractoryTime); 	//set the refractory time
-	void setRingBuffer(int delaySteps); 		//allow us to create a delay between neurons when spiking
+	void setRefractoryTime(double const refractoryTime); 			//set the refractory time
+	void setRingBuffer(int delaySteps, bool whichTypeOfNeuron); 	//allow us to create a delay between neurons when spiking
+	void setExcitatory(bool yes);				//allow us to change the neuron type (between excitatory or inhibitory)
 	
-	bool update(unsigned int i); //return true if we have a spike, else false
+	bool update(unsigned int i); 		//return true if we have a spike, else false
 
 };
 

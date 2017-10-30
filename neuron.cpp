@@ -1,4 +1,5 @@
 #include <iostream>
+
 #include "neuron.hpp"
 
 //constructor
@@ -32,6 +33,16 @@ double neuron::getIext() const
 	return Iext_;
 }
 
+bool neuron::getExcitatoryState() const
+{
+	return isExcitatory_;
+}
+
+std::vector<double> neuron::getSpikesTime() const
+{
+	return spikesTime_;
+}
+
 //setters
 void neuron::setPot(double mPot)
 {
@@ -50,12 +61,22 @@ void neuron::setRefractoryTime(double const refractoryTime)
 
 /*this function adds one in the ring buffer of our neuron when another 
  * neuron around spikes and transfers an additionnal potential J_ to our neuron*/
-void neuron::setRingBuffer(int delaySteps)
+void neuron::setRingBuffer(int delaySteps, bool whichTypeOfNeuron)
 {
-	ringBuffer_[(clock_ + delaySteps) % ringBuffer_.size()] += 1;
+	if (whichTypeOfNeuron)
+	{
+		ringBuffer_[(clock_ + delaySteps) % ringBuffer_.size()] += 1;
+	}
+	else
+	{
+		ringBuffer_[(clock_ + delaySteps) % ringBuffer_.size()] += -1;
+	}
 }
 
-
+void neuron::setExcitatory(bool yes)
+{
+	isExcitatory_ = yes;
+}
 
 bool neuron::update(unsigned int i)
 {
@@ -85,7 +106,7 @@ bool neuron::update(unsigned int i)
 		double Js = (ringBuffer_[i%ringBuffer_.size()]*J_);
 		mPot_ = (EXP*mPot_ + Iext_*CONST + Js);
 		
-		std::cout << "j'actualise " << mPot_ << std::endl;
+		//std::cout << "j'actualise " << mPot_ << std::endl;
 	}
 	
 	clock_ = i; 			//the neuron time is refreshed
