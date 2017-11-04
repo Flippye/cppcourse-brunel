@@ -27,8 +27,9 @@ class neuron {
 
 	double EXP = (exp(-h_/tau_)); 		///<constant for the differential equation
 	double CONST = (R_ * (1-EXP));		///<constant for the differential equation
+	double MU_EXT_ = 2.0;
 	
-	
+	bool doWeAcknowledgeTheBackgroundNoise_ = false;		///<boolean to choose if we take into account the rest of the cortex (useful to keep the tests working)
 	
 	public :
 	
@@ -117,12 +118,14 @@ class neuron {
 	*/
 	void setExcitatory(bool yes);
 	
+	
+	//The Function
 	/**
 	@brief : update the membrane potential of a neuron
 	@param i : number of the iteration of the simulation 
 	@return : bool, true if the neuron spiked, false if it didn't
 	*/
-	bool update(unsigned int i);
+	bool update(unsigned int i, unsigned int nit);
 };
 
 #endif 
