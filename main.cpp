@@ -34,16 +34,11 @@ int main () {
 		std::cout << "Number of neurons not correct. Error :" << x << std::endl;
 	}
 	
-	double h_ = 0.1; 	//integration stepsize TEMPORARY SOLUTION
-	cortex coco;
-
-	/*std::ofstream membranePotentials1("membranePotentials.txt");	//we create a file to store its membrane potentials values
+	cortex coco(neuronsNumber);
 	
-	std::cout << "N1 Iext: " << neuron1.getIext() << " mPot " << neuron1.getPot() << " refractory time : " << neuron1.getRefractoryTime() << std::endl;
-	std::cout << "N2 Iext: " << neuron1.getIext() << " mPot " << neuron1.getPot() << " refractory time : " << neuron1.getRefractoryTime() << std::endl;
-	*/
-	
-	unsigned int nit_ = (unsigned int) ((b-a)/h_); 		//number of iterations (or steps) of the simulation (double cast into int)
+	//std::ofstream membranePotentials1("membranePotentials.txt");	//we create a file to store its membrane potentials values
+		
+	unsigned int nit_ = (unsigned int) ((b-a)/coco.getH()); 		//number of iterations (or steps) of the simulation (double cast into int)
 
 	/*for(unsigned int i = 0; i < nit_; i++)
 	{
@@ -56,14 +51,9 @@ int main () {
 	
 	membranePotentials1.close();*/
 	
-	//we fill our vector of pointers to neurons with the number of neurons chosen by the utilisator
-	for (unsigned int i = 0; i < neuronsNumber; i++)
-	{
-		coco.pushbackToNeurons_(new neuron(10));
-	}
 	
 	coco.updateAll(nit_);
-	
+	coco.timeOfTheSpikes();
 	
 	return 0;
 } 

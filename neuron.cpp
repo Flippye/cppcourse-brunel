@@ -1,4 +1,6 @@
 #include <iostream>
+#include <random>
+
 #include "neuron.hpp"
 
 //constructor
@@ -32,6 +34,16 @@ double neuron::getIext() const
 	return Iext_;
 }
 
+bool neuron::getExcitatoryState() const
+{
+	return isExcitatory_;
+}
+
+std::vector<double> neuron::getSpikesTime() const
+{
+	return spikesTime_;
+}
+
 //setters
 void neuron::setPot(double mPot)
 {
@@ -50,14 +62,24 @@ void neuron::setRefractoryTime(double const refractoryTime)
 
 /*this function adds one in the ring buffer of our neuron when another 
  * neuron around spikes and transfers an additionnal potential J_ to our neuron*/
-void neuron::setRingBuffer(int delaySteps)
+void neuron::setRingBuffer(int delaySteps, bool whichTypeOfNeuron)
 {
-	ringBuffer_[(clock_ + delaySteps) % ringBuffer_.size()] += 1;
+	if (whichTypeOfNeuron)
+	{
+		ringBuffer_[(clock_ + delaySteps) % ringBuffer_.size()] += 1;
+	}
+	else
+	{
+		ringBuffer_[(clock_ + delaySteps) % ringBuffer_.size()] += -1;
+	}
 }
 
+void neuron::setExcitatory(bool yes)
+{
+	isExcitatory_ = yes;
+}
 
-
-bool neuron::update(unsigned int i)
+bool neuron::update(unsigned int i, unsigned int nit)
 {
 	bool isItASpike (false); //bool variable, initialized to false if there is no spike, set to true if we have one
 	
@@ -67,7 +89,6 @@ bool neuron::update(unsigned int i)
 		spikesNb_++;
 		spikesTime_.push_back(i*h_); //(nit*h_) is the time when the spike occurs
 		
-		//std::cout << "if we're here the time is in the file" << std::endl;
 		std::cout << "WE HAVE A PEAK (at " << (i*h_) << ")" << std::endl;
 		
 		refractorySteps_ = (2/h_); //2ms
@@ -77,15 +98,29 @@ bool neuron::update(unsigned int i)
 		isItASpike = true;
 	}
 	
-	//we actualize V(t+h)
+	//we actualize the membrane potential V(t+h)
 	if(refractorySteps_ <= 0)
 	{
+		/* if loop to take into account the spikes from the rest of the brain, 
+		 * represented by a random poisson distribution, only if the boolean
+		 * doWeAcknowledgeSpikesFromTheOutside is turned to true */
+		double receivedSpikesFromTheOutside(0.0);
+		if (doWeAcknowledgeTheBackgroundNoise_)
+		{
+			static std::random_device helloRando;
+			static std::mt19937 gen(helloRando());
+			static std::poisson_distribution<> backgroundNoise(MU_EXT_ * h_); //the event occurs MU_EXT_ times a timestep in average
+			
+			receivedSpikesFromTheOutside = backgroundNoise(gen)*J_;
+		}
+		
 		/*we check if there is any spikes inside the ring buffer 
 		 * waiting to be counted in the membrane potential of the neuron*/
-		double Js = (ringBuffer_[i%ringBuffer_.size()]*J_);
-		mPot_ = (EXP*mPot_ + Iext_*CONST + Js);
+		double receivedSpikesFromTheBuffer = (ringBuffer_[i%ringBuffer_.size()]*J_);
 		
-		std::cout << "j'actualise " << mPot_ << std::endl;
+		mPot_ = (EXP*mPot_ + Iext_*CONST + receivedSpikesFromTheBuffer + receivedSpikesFromTheOutside);
+		
+		//std::cout << "j'actualise " << mPot_ << std::endl;
 	}
 	
 	clock_ = i; 			//the neuron time is refreshed
