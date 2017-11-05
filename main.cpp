@@ -4,16 +4,15 @@
 #include "cortex.hpp"
 
 int main () {
-	
 	//we first ask the user to type a time interval, represented by doubles
 	double a, b;
 	try
 	{
-		std::cout << "Choose an interval [ms] :";
-		std::cin >> a >> b;
-		
-		//we check if the interval is correct with a try-catch block
-		if(a>=b or a<0 or b<0) { throw 42; }
+		std::cout << "Choose an interval [ms], from: ";
+		std::cin >> a;
+		std::cout << " to: ";
+		std::cin >> b;
+		if(a>=b or a<0 or b<0) { throw 42; }	//we check if the interval is correct with a try-catch block
 	}
 	catch(int x) 
 	{
@@ -26,34 +25,20 @@ int main () {
 		std::cout << "Choose number of neurons :";
 		std::cin >> neuronsNumber;
 		
-		//we check if the number of neurons is possible
-		if(neuronsNumber < 2) { throw 10; }
+		if(neuronsNumber < 2) { throw 10; }		//we check if the number of neurons is possible
 	}
 	catch(unsigned int x) 
 	{
 		std::cout << "Number of neurons not correct. Error :" << x << std::endl;
 	}
 	
-	cortex coco(neuronsNumber);
+	//cortex coco(neuronsNumber);
+	cortex coco(1000, 250);		//we create the cortex holding all our neurons together
+			
+	unsigned int nit_ = (unsigned int) ((b-a)/coco.getH());		//number of iterations (or steps) of the simulation (double cast into int)
 	
-	//std::ofstream membranePotentials1("membranePotentials.txt");	//we create a file to store its membrane potentials values
-		
-	unsigned int nit_ = (unsigned int) ((b-a)/coco.getH()); 		//number of iterations (or steps) of the simulation (double cast into int)
-
-	/*for(unsigned int i = 0; i < nit_; i++)
-	{
-		std::cout << "Iteration number " << i << std::endl;
-		//std::cout << "Time is " << i*neuron1.getH() << std::endl;
-		
-		neuron1.update(i);
-		membranePotentials1 << neuron1.getPot() << "\n"; 			//we store the membrane potential of this interval in a file
-	}
-	
-	membranePotentials1.close();*/
-	
-	
-	coco.updateAll(nit_);
-	coco.timeOfTheSpikes();
+	coco.updateAll(nit_);		//we update our cortex on all our simulation time
+	coco.timeOfTheSpikes();		//we create the file storing the spikes time
 	
 	return 0;
 } 

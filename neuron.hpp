@@ -8,11 +8,12 @@ class neuron {
 	
 	private :
 
-	double mPot_; 				///<membrane potential [mV]
-	double Iext_; 				///<external current [mV]
-	unsigned int spikesNb_; 	///<number of spikes of the neuron	
-	int clock_; 				///<personnal clock of the neuron (not in ms but in number of cycles)
-	double refractoryTime_; 	///<refractory time [ms]
+	double mPot_;					///<membrane potential [mV]
+	double refractoryMPot_ = 0.0; 	///<initial membrane potential [mV]
+	double Iext_; 					///<external current [mV]
+	unsigned int spikesNb_; 		///<number of spikes of the neuron	
+	int clock_; 					///<personnal clock of the neuron (not in ms but in number of cycles)
+	double refractoryTime_; 		///<refractory time [ms]
 	std::vector<double> spikesTime_; 	///<vector with all spikes time of the neuron
 	std::vector<int> ringBuffer_; 		///<vector that allows to create a delay when transmitting spikes between neurons (initial size 10)
 	bool isExcitatory_ = true;			///<if the neuron is excitatory, bool is true, if the neuron is inhibitory, bool is false
@@ -41,7 +42,7 @@ class neuron {
 	@param clock : personnal clock of the neuron (initialized to 0)
 	@param refractoryTime : another internal clock  of the neuron allowing us to know if it is refractory or not (initialized to 2.0 ms)
 	*/
-	neuron(double mPot = 0.0, double Iext = 0.0, unsigned int spikesNb = 0, int clock = 0, double refractoryTime = 2.0);
+	neuron(double mPot = 0.0, double Iext = 1.01, unsigned int spikesNb = 0, int clock = 0, double refractoryTime = 2.0);
 	
 	//getters
 	/**
@@ -113,6 +114,11 @@ class neuron {
 	void setRingBuffer(int delaySteps, bool whichTypeOfNeuron);
 	
 	/**
+	@brief : empty the ring buffer of the neuron in case it is refractory
+	*/
+	void emptyRingBuffer();
+	
+	/**
 	@brief : setter for the excitatory state of the neuron
 	@param yes : bool (true if the neuron is excitatory, false if it is inhibitory)
 	*/
@@ -125,7 +131,7 @@ class neuron {
 	@param i : number of the iteration of the simulation 
 	@return : bool, true if the neuron spiked, false if it didn't
 	*/
-	bool update(unsigned int i, unsigned int nit);
+	bool update(unsigned int i);
 };
 
 #endif 

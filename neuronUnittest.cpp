@@ -11,7 +11,7 @@ TEST(oneNeuron, noSpike)		//we test if the neuron spike if we give it initially 
 	unsigned int nit(1000/nana.getH());
 	for (unsigned int i = 0; i < nit; ++i)
 	{
-		nana.update(i, nit);
+		nana.update(i);
 	}
 	
 	EXPECT_EQ(0, nana.getSpikesNb());
@@ -23,7 +23,7 @@ TEST(oneNeuron, mPotTwenty)		//we test if the membrane potential of the neuron s
 	unsigned int nit(1000/nana.getH());
 	for (unsigned int i = 0; i < nit; ++i)
 	{
-		nana.update(i, nit);
+		nana.update(i);
 	}
 	
 	ASSERT_FLOAT_EQ(20, nana.getPot());
@@ -35,7 +35,7 @@ TEST(oneNeuron, negativePot)	//we test if the membrane potential of the neuron s
 	unsigned int nit(1000/nana.getH());
 	for (unsigned int i = 0; i < nit; ++i)
 	{
-		nana.update(i, nit);
+		nana.update(i);
 	}
 	
 	ASSERT_FLOAT_EQ(-20, nana.getPot());
@@ -47,7 +47,7 @@ TEST(oneNeuron, zeroExternalCurrent)
 	unsigned int nit(1000/nana.getH());
 	for (unsigned int i = 0; i < nit; ++i)
 	{
-		nana.update(i, nit);
+		nana.update(i);
 	}
 	
 	ASSERT_FLOAT_EQ(0, nana.getPot());
@@ -59,7 +59,7 @@ TEST(oneNeuron, doesItSpike)
 	unsigned int nit(100/nana.getH());
 	for (unsigned int i = 0; i < nit; ++i)
 	{
-		nana.update(i, nit);
+		nana.update(i);
 	}
 	
 	EXPECT_EQ(1, nana.getSpikesNb());

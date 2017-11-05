@@ -29,6 +29,8 @@ cortex::cortex(unsigned int nbNeuronsE, unsigned int nbNeuronsI)
 		neurons_[i]->setExcitatory(false);
 	}
 	
+	connexionMatrix_.resize((nbNeuronsE + nbNeuronsI), std::vector<int> (nbNeuronsE + nbNeuronsI));
+	
 	createRandomConnexionMatrix(nbNeuronsE, nbNeuronsI);
 }
 
@@ -101,7 +103,7 @@ void cortex::updateAll(unsigned int nit)
 				/*if we have a spike, isItASpike becomes true 
 				 * and allow the access to the following if condition*/
 				 
-				bool isItASpike (neurons_[j]->update(i, nit)); 
+				bool isItASpike (neurons_[j]->update(i)); 
 				
 				/*if the neuron has spiked, we send its membrane potential (different depending on if 
 				 * it's an excitatory or inhibitory neuron) to all the neurons it is connected with */
@@ -125,7 +127,7 @@ void cortex::updateAll(unsigned int nit)
 
 void cortex::timeOfTheSpikes()
 {
-	std::ofstream documentContainingTheSpikesTime("TimeFlies.dat"); //csv = document Excel + facile à lire
+	std::ofstream documentContainingTheSpikesTime("TimeFlies.csv"); //csv = document Excel + facile à lire
 	if (!documentContainingTheSpikesTime.fail())
 	{
 		for (unsigned int i = 0; i < neurons_.size(); ++i) //neuron iteration
