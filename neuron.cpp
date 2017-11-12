@@ -4,8 +4,8 @@
 #include "neuron.hpp"
 
 //constructor
-neuron::neuron(double mPot, double Iext, unsigned int spikesNb, int clock, double refractoryTime) //constructor
-	: mPot_(mPot), Iext_(Iext), spikesNb_(spikesNb), clock_(clock), refractoryTime_(refractoryTime), ringBuffer_(10,0)
+neuron::neuron(double mPot, double Iext, bool type, bool poisson, double g, double mu, unsigned int spikesNb, int clock, double refractoryTime) //constructor
+	: mPot_(mPot), Iext_(Iext), isExcitatory_(type), doWeAcknowledgeTheBackgroundNoise_(poisson), g_(g), MU_EXT_(mu), spikesNb_(spikesNb), clock_(clock), refractoryTime_(refractoryTime), ringBuffer_(16,0)
 {}
 	
 //getters
@@ -29,11 +29,6 @@ double neuron::getH() const
 	return h_;
 }
 
-double neuron::getIext() const
-{
-	return Iext_;
-}
-
 bool neuron::getExcitatoryState() const
 {
 	return isExcitatory_;
@@ -48,6 +43,11 @@ std::vector<double> neuron::getSpikesTime() const
 void neuron::setPot(double mPot)
 {
 	mPot_ = mPot;
+}
+
+void neuron::setIext(double newExternalCurrent) 
+{
+	Iext_ = newExternalCurrent;
 }
 
 void neuron::setSpikesNb(unsigned int spikesNb)
@@ -68,12 +68,12 @@ void neuron::setRingBuffer(int delaySteps, bool whichTypeOfNeuron)
 	//if whichTypeOfNeuron is true, the neuron sending the spike is excitatory
 	if (whichTypeOfNeuron)
 	{
-		ringBuffer_[(clock_ + delaySteps) % ringBuffer_.size()] += 1;
+		ringBuffer_[(clock_ + delaySteps) % ringBuffer_.size()] += J_*g_;
 	}
 	//if whichTypeOfNeuron is false, the neuron sending the spike is inhibitory
 	else
 	{
-		ringBuffer_[(clock_ + delaySteps) % ringBuffer_.size()] -= 1;
+		ringBuffer_[(clock_ + delaySteps) % ringBuffer_.size()] += J_*g_;
 	}
 }
 
@@ -90,17 +90,21 @@ void neuron::setExcitatory(bool yes)
 	isExcitatory_ = yes;
 }
 
+void neuron::setG(double newGpoint)
+{
+	g_ = newGpoint;
+}
+
 bool neuron::update(unsigned int i)
 {
 	bool isItASpike (false); 			//bool variable, initialized to false if there is no spike, set to true if we have one
-	
 	//we check if there is a spike, and if yes, we memorize the hour in the vector spikesTime_ and reinitialize the neuron
 	if(mPot_ >= threshold_)
 	{
 		++spikesNb_;					//we increment the int taking into account the total nb of spikes of our neuron
 		spikesTime_.push_back(i*h_); 	//(i*h_) is the time when the spike occurs
 		
-		std::cout << "WE HAVE A PEAK (at " << (i*h_) << ")" << std::endl;
+		//std::cout << "WE HAVE A PEAK (at " << (i*h_) << ")" << std::endl;
 		
 		refractorySteps_ = (2/h_); 		//(2/h_) is the number of time steps for which the neuron should stay refractory
 		mPot_ = refractoryMPot_; 		//the neuron must get back to its original membrane potential after a spike

@@ -10,7 +10,8 @@ include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
 add_executable(neuron
 			neuron.cpp
 			main.cpp
-			cortex.cpp)
+			cortex.cpp
+			experiment.cpp)
 
 add_executable(neuron_unittest
 			neuron.cpp
